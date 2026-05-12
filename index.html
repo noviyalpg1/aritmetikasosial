@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aritmetika Sosial - Media Pembelajaran Interaktif</title>
+    <!-- Font Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-dark: #1e3a8a;
+            --primary-blue: #3b82f6;
+            --secondary-blue: #60a5fa;
+            --accent-cyan: #22d3ee;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --glass-bg: rgba(255, 255, 255, 0.8);
+            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* --- Navbar --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 70px;
+            background: var(--white);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            z-index: 1000;
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            list-style: none;
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .nav-links li a:hover, .nav-links li a.active {
+            color: var(--primary-blue);
+        }
+
+        .nav-tools {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--primary-dark);
+            padding: 5px;
+            border-radius: 50%;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-btn:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        /* --- SPA Sections --- */
+        section {
+            padding: 100px 5% 50px;
+            min-height: 100vh;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+            padding-top: 150px;
+        }
+
+        .hero-content {
+            flex: 1;
+        }
+
+        .hero-content h1 {
+            font-size: 3rem;
+            color: var(--primary-dark);
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+
+        .hero-content p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            max-width: 500px;
+        }
+
+        .hero-img {
+            flex: 1;
+            text-align: center;
+        }
+
+        .hero-img img {
+            max-width: 100%;
+            border-radius: 20px;
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.1));
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        /* --- Progress Section --- */
+        .progress-container {
+            margin-top: 50px;
+            background: var(--white);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .progress-bar-bg {
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--accent-cyan), var(--primary-blue));
+            width: 0%;
+            transition: width 1s ease;
+        }
+
+        /* --- Grid & Cards --- */
+        .grid-materi {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .card-materi {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .card-materi:hover {
+            transform: translateY(-10px);
+            border-color: var(--secondary-blue);
+        }
+
+        .card-materi i {
+            font-size: 3rem;
+            color: var(--primary-blue);
+            margin-bottom: 20px;
+        }
+
+        /* --- Materi Detail --- */
+        .materi-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .materi-item {
+            background: var(--white);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .formula-box {
+            background: #f1f5f9;
+            padding: 15px;
+            border-left: 5px solid var(--primary-blue);
+            margin: 15px 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.2rem;
+            text-align: center;
+        }
+
+        .simulation-box {
+            background: #ecf3ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        input[type="number"] {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            margin: 5px;
+            width: 100px;
+        }
+
+        /* --- Latihan --- */
+        .quiz-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .drop-zone {
+            min-height: 60px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+            padding: 10px;
+        }
+
+        .drag-item {
+            background: var(--primary-blue);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: grab;
+            margin: 5px;
+            display: inline-block;
+        }
+
+        /* --- Refleksi --- */
+        .reflection-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            resize: none;
+        }
+
+        /* --- Mobile Responsiveness --- */
+        @media (max-width: 768px) {
+            .hero { flex-direction: column; text-align: center; }
+            .hero-content h1 { font-size: 2rem; }
+            .nav-links { 
+                position: absolute;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background: var(--white);
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: 0 10px 10px rgba(0,0,0,0.05);
+                display: none;
+            }
+            .nav-links.show {
+                display: flex;
+            }
+            .grid-materi { grid-template-columns: 1fr; }
+        }
+
+        /* Hamburger Toggle */
+        .mobile-toggle {
+            display: none;
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            .mobile-toggle { display: block; }
+        }
+
+        /* Custom Alert Message Box */
+        #message-box {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary-dark);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 2000;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <!-- Message Box -->
+    <div id="message-box"></div>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">
+            <i data-lucide="calculator"></i>
+            <span>MathSmart</span>
+        </div>
+        <ul class="nav-links" id="nav-links">
+            <li><a onclick="showSection('home')" id="link-home" class="active">Beranda</a></li>
+            <li><a onclick="showSection('materi')" id="link-materi">Materi</a></li>
+            <li><a onclick="showSection('latihan')" id="link-latihan">Latihan</a></li>
+            <li><a onclick="showSection('refleksi')" id="link-refleksi">Refleksi</a></li>
+            <li><a onclick="goToDeveloper()">Pengembang</a></li>
+        </ul>
+        <div class="nav-tools">
+            <button class="icon-btn" onclick="toggleAudio()" title="Musik Latar">
+                <i data-lucide="music" id="music-icon"></i>
+            </button>
+            <button class="icon-btn" onclick="toggleFullScreen()" title="Layar Penuh">
+                <i data-lucide="maximize" id="fs-icon"></i>
+            </button>
+            <div class="mobile-toggle" onclick="toggleMobileMenu()">
+                <i data-lucide="menu"></i>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Section Beranda -->
+    <section id="home" class="active">
+        <div class="hero">
+            <div class="hero-content">
+                <h1>Media Pembelajaran Interaktif <br> <span style="color: var(--primary-blue)">Aritmetika Sosial</span></h1>
+                <p>Belajar konsep jual beli, diskon, pajak, hingga bunga tunggal dengan cara yang seru dan mudah dipahami.</p>
+                <button class="btn-primary" onclick="showSection('materi')">
+                    Mulai Belajar <i data-lucide="arrow-right"></i>
+                </button>
+            </div>
+            <div class="hero-img">
+                <img src="https://imgur.com/aiAFHO2.png" alt="[Gambar Aritmetika Sosial]" onerror="this.src='https://cdni.iconscout.com/illustration/premium/thumb/student-studying-math-illustration-download-in-svg-png-gif-file-formats--calculating-boy-online-class-education-learning-pack-illustrations-5219293.png'">
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-header">
+                <span>Progress Belajar Kamu</span>
+                <span id="progress-text">0% Selesai</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div id="progress-fill" class="progress-bar-fill"></div>
+            </div>
+        </div>
+
+        <div class="grid-materi">
+            <div class="card-materi" onclick="showSection('materi')">
+                <i data-lucide="trending-up"></i>
+                <h3>Untung & Rugi</h3>
+                <p>Pahami konsep dasar perdagangan.</p>
+            </div>
+            <div class="card-materi" onclick="showSection('materi')">
+                <i data-lucide="percent"></i>
+                <h3>Diskon & Pajak</h3>
+                <p>Cara cerdas menghitung potongan harga.</p>
+            </div>
+            <div class="card-materi" onclick="showSection('materi')">
+                <i data-lucide="landmark"></i>
+                <h3>Bunga Tunggal</h3>
+                <p>Simulasi tabungan masa depan.</p>
+            </div>
+            <div class="card-materi" onclick="showSection('materi')">
+                <i data-lucide="package"></i>
+                <h3>Bruto, Netto, Tara</h3>
+                <p>Menghitung berat kemasan dan isi.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Materi -->
+    <section id="materi">
+        <h2 style="margin-bottom: 30px; text-align: center;">Materi Pembelajaran</h2>
+        <div class="materi-list">
+            <!-- Materi 1 -->
+            <div class="materi-item">
+                <h3>1. Untung dan Rugi</h3>
+                <p>Untung terjadi jika harga jual lebih tinggi dari harga beli. Sebaliknya, rugi terjadi jika harga jual lebih rendah.</p>
+                <div class="formula-box">
+                    Untung = Jual - Beli <br>
+                    Rugi = Beli - Jual
+                </div>
+                <div class="simulation-box">
+                    <strong>Simulasi Cepat:</strong><br>
+                    Beli: <input type="number" id="sim-beli" value="10000" oninput="calcUntungRugi()"> 
+                    Jual: <input type="number" id="sim-jual" value="12000" oninput="calcUntungRugi()">
+                    <p id="res-untung" style="margin-top: 10px; font-weight: bold; color: green;">Hasil: Untung Rp 2.000 (20%)</p>
+                </div>
+            </div>
+
+            <!-- Materi 2 -->
+            <div class="materi-item">
+                <h3>2. Diskon (Rabat)</h3>
+                <p>Potongan harga yang diberikan penjual kepada pembeli.</p>
+                <div class="formula-box">
+                    Harga Akhir = Harga Awal - (Persen Diskon × Harga Awal)
+                </div>
+                <div class="simulation-box">
+                    <strong>Kalkulator Diskon:</strong><br>
+                    Harga: <input type="number" id="disc-price" value="100000" oninput="calcDiskon()">
+                    Diskon (%): <input type="number" id="disc-percent" value="10" oninput="calcDiskon()">
+                    <p id="res-diskon" style="margin-top: 10px; font-weight: bold;">Bayar: Rp 90.000</p>
+                </div>
+            </div>
+
+            <!-- Materi 3 -->
+            <div class="materi-item">
+                <h3>3. Bruto, Netto, Tara</h3>
+                <p>Bruto adalah berat kotor, Netto adalah berat bersih, dan Tara adalah berat kemasan.</p>
+                <div class="formula-box">
+                    Bruto = Netto + Tara
+                </div>
+                <div class="simulation-box">
+                    Netto: <input type="number" id="sim-netto" value="48" oninput="calcBruto()"> kg 
+                    Tara: <input type="number" id="sim-tara" value="2" oninput="calcBruto()"> kg
+                    <p id="res-bruto" style="margin-top: 10px; font-weight: bold;">Bruto: 50 kg</p>
+                </div>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 40px;">
+            <button class="btn-primary" onclick="showSection('latihan')">Lanjut ke Latihan <i data-lucide="edit-3"></i></button>
+        </div>
+    </section>
+
+    <!-- Section Latihan -->
+    <section id="latihan">
+        <div class="quiz-container">
+            <h2 style="text-align: center; margin-bottom: 20px;">Latihan Interaktif</h2>
+            
+            <div id="quiz-content">
+                <!-- Question 1: Benar/Salah -->
+                <div class="quiz-step" id="step-1">
+                    <h3>Pertanyaan 1: Benar atau Salah?</h3>
+                    <p>Jika Harga Beli Rp 50.000 dan Harga Jual Rp 45.000, maka pedagang tersebut mengalami Untung.</p>
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button class="btn-primary" style="background: #ef4444;" onclick="checkAnswer(1, false)">Salah</button>
+                        <button class="btn-primary" style="background: #22c55e;" onclick="checkAnswer(1, true)">Benar</button>
+                    </div>
+                </div>
+
+                <!-- Question 2: Matching -->
+                <div class="quiz-step hidden" id="step-2">
+                    <h3>Pertanyaan 2: Pasangkan Istilah!</h3>
+                    <p>Geser kata ke kotak yang tepat!</p>
+                    <div style="margin-top: 20px;">
+                        <div class="drag-item" draggable="true" ondragstart="drag(event)" id="drag1">Netto</div>
+                        <div class="drag-item" draggable="true" ondragstart="drag(event)" id="drag2">Bruto</div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <p>Berat kotor (Isi + Kemasan):</p>
+                        <div class="drop-zone" id="drop-bruto" ondrop="drop(event, 'Bruto')" ondragover="allowDrop(event)">Drop di sini</div>
+                        <p>Berat bersih (Isi saja):</p>
+                        <div class="drop-zone" id="drop-netto" ondrop="drop(event, 'Netto')" ondragover="allowDrop(event)">Drop di sini</div>
+                    </div>
+                </div>
+
+                <!-- Result -->
+                <div class="quiz-step hidden" id="quiz-result">
+                    <h3 id="result-title">Hebat! Kamu Selesai.</h3>
+                    <p id="result-score">Skor Kamu: 100/100</p>
+                    <button class="btn-primary" onclick="resetQuiz()" style="margin-top: 20px;">Ulangi Latihan</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Refleksi -->
+    <section id="refleksi">
+        <h2 style="text-align: center; margin-bottom: 30px;">Refleksi Belajar</h2>
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div class="reflection-card">
+                <h3>Bagaimana perasaanmu setelah belajar hari ini?</h3>
+                <div style="font-size: 2rem; display: flex; gap: 20px; margin: 20px 0;" id="emoji-container">
+                    <span style="cursor: pointer; transition: transform 0.2s;" onclick="setEmoji(this)">😊</span>
+                    <span style="cursor: pointer; transition: transform 0.2s;" onclick="setEmoji(this)">🤔</span>
+                    <span style="cursor: pointer; transition: transform 0.2s;" onclick="setEmoji(this)">🤯</span>
+                </div>
+            </div>
+            <div class="reflection-card">
+                <h3>Apa bagian yang paling sulit dipahami?</h3>
+                <textarea id="reflection-text" placeholder="Tuliskan pendapatmu di sini..."></textarea>
+            </div>
+            <button class="btn-primary" onclick="submitReflection()">Kirim Refleksi</button>
+        </div>
+    </section>
+
+    <!-- Audio Elements -->
+    <audio id="bg-music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sfx-correct">
+        <source src="https://cdn.pixabay.com/audio/2021/08/04/audio_bbd1440788.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sfx-wrong">
+        <source src="https://cdn.pixabay.com/audio/2022/03/10/audio_c3527e30c2.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // --- Initialization ---
+        window.onload = function() {
+            lucide.createIcons();
+            // Start simulation calc
+            calcUntungRugi();
+            calcDiskon();
+            calcBruto();
+        };
+
+        let currentProgress = 0;
+        let score = 0;
+        let dropsCorrect = 0;
+        let isPlaying = false;
+
+        const bgMusic = document.getElementById('bg-music');
+        const sfxCorrect = document.getElementById('sfx-correct');
+        const sfxWrong = document.getElementById('sfx-wrong');
+
+        // --- SPA Logic ---
+        function showSection(id) {
+            document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+            const activeLink = document.getElementById('link-' + id);
+            if(activeLink) activeLink.classList.add('active');
+
+            // Close mobile menu if open
+            document.getElementById('nav-links').classList.remove('show');
+            
+            // Auto update progress when visiting sections
+            if(id === 'materi' && currentProgress < 30) updateProgress(30);
+            if(id === 'latihan' && currentProgress < 60) updateProgress(60);
+            if(id === 'refleksi' && currentProgress < 90) updateProgress(90);
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateProgress(val) {
+            currentProgress = val;
+            const fill = document.getElementById('progress-fill');
+            const text = document.getElementById('progress-text');
+            if(fill) fill.style.width = val + '%';
+            if(text) text.innerText = val + '% Selesai';
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('nav-links').classList.toggle('show');
+        }
+
+        // --- Simulasi Logic ---
+        function calcUntungRugi() {
+            const beli = parseFloat(document.getElementById('sim-beli').value) || 0;
+            const jual = parseFloat(document.getElementById('sim-jual').value) || 0;
+            const res = document.getElementById('res-untung');
+
+            if (jual > beli) {
+                const untung = jual - beli;
+                const persen = beli > 0 ? (untung / beli) * 100 : 0;
+                res.innerHTML = `Hasil: Untung Rp ${untung.toLocaleString()} (${persen.toFixed(1)}%)`;
+                res.style.color = 'green';
+            } else if (jual < beli) {
+                const rugi = beli - jual;
+                const persen = beli > 0 ? (rugi / beli) * 100 : 0;
+                res.innerHTML = `Hasil: Rugi Rp ${rugi.toLocaleString()} (${persen.toFixed(1)}%)`;
+                res.style.color = 'red';
+            } else {
+                res.innerHTML = "Hasil: Impas (Tidak Untung/Rugi)";
+                res.style.color = 'gray';
+            }
+        }
+
+        function calcDiskon() {
+            const price = parseFloat(document.getElementById('disc-price').value) || 0;
+            const disc = parseFloat(document.getElementById('disc-percent').value) || 0;
+            const final = price - (price * disc / 100);
+            document.getElementById('res-diskon').innerText = `Bayar: Rp ${final.toLocaleString()}`;
+        }
+
+        function calcBruto() {
+            const n = parseFloat(document.getElementById('sim-netto').value) || 0;
+            const t = parseFloat(document.getElementById('sim-tara').value) || 0;
+            document.getElementById('res-bruto').innerText = `Bruto: ${n + t} kg`;
+        }
+
+        // --- Latihan Logic ---
+        function checkAnswer(step, isCorrect) {
+            if (isCorrect) {
+                if(sfxCorrect) sfxCorrect.play();
+                score += 50;
+                showMessage("Jawaban Benar! Mantap.");
+            } else {
+                if(sfxWrong) sfxWrong.play();
+                showMessage("Kurang Tepat. Coba perhatikan konsep Harga Beli vs Harga Jual.");
+            }
+            goToStep(2);
+        }
+
+        function goToStep(num) {
+            document.querySelectorAll('.quiz-step').forEach(s => s.classList.add('hidden'));
+            const nextStep = document.getElementById('step-' + num);
+            if(nextStep) nextStep.classList.remove('hidden');
+        }
+
+        // --- Drag & Drop ---
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+        function drop(ev, expected) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const draggedElement = document.getElementById(data);
+            if(!draggedElement) return;
+            
+            const droppedText = draggedElement.innerText;
+
+            if (droppedText === expected) {
+                ev.target.innerHTML = `<span style="color:green; font-weight:bold">${droppedText} (Benar!)</span>`;
+                if(sfxCorrect) sfxCorrect.play();
+                draggedElement.style.display = 'none';
+                checkQuizFinish();
+            } else {
+                if(sfxWrong) sfxWrong.play();
+                showMessage("Belum tepat, coba lagi!");
+            }
+        }
+
+        function checkQuizFinish() {
+            dropsCorrect++;
+            if (dropsCorrect >= 2) {
+                setTimeout(() => {
+                    document.querySelectorAll('.quiz-step').forEach(s => s.classList.add('hidden'));
+                    document.getElementById('quiz-result').classList.remove('hidden');
+                    updateProgress(100);
+                    confetti({
+                        particleCount: 150,
+                        spread: 80,
+                        origin: { y: 0.6 }
+                    });
+                }, 500);
+            }
+        }
+
+        function resetQuiz() {
+            location.reload(); 
+        }
+
+        // --- Audio & FS ---
+        function toggleAudio() {
+            const icon = document.getElementById('music-icon');
+            if (isPlaying) {
+                bgMusic.pause();
+                icon.setAttribute('data-lucide', 'music');
+            } else {
+                bgMusic.play().catch(e => showMessage("Klik sembarang tempat dulu sebelum memutar musik."));
+                icon.setAttribute('data-lucide', 'volume-2');
+            }
+            isPlaying = !isPlaying;
+            lucide.createIcons();
+        }
+
+        function toggleFullScreen() {
+            const fsIcon = document.getElementById('fs-icon');
+            
+            if (!document.fullscreenEnabled) {
+                showMessage("Fitur layar penuh dibatasi oleh kebijakan keamanan lingkungan ini.");
+                return;
+            }
+
+            try {
+                if (!document.fullscreenElement) {
+                    const entryPoint = document.documentElement;
+                    if (entryPoint.requestFullscreen) {
+                        entryPoint.requestFullscreen().catch(err => {
+                            console.warn("Fullscreen error handled:", err);
+                            showMessage("Gagal masuk ke mode layar penuh.");
+                        });
+                    }
+                    fsIcon.setAttribute('data-lucide', 'minimize');
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen().catch(err => console.warn(err));
+                    }
+                    fsIcon.setAttribute('data-lucide', 'maximize');
+                }
+            } catch (err) {
+                console.warn("Permissions error caught:", err);
+                showMessage("Layar penuh dibatasi oleh kebijakan peramban.");
+            }
+            lucide.createIcons();
+        }
+
+        // --- Refleksi ---
+        function setEmoji(el) {
+            document.querySelectorAll('#emoji-container span').forEach(s => s.style.transform = "scale(1)");
+            el.style.transform = "scale(1.5)";
+        }
+
+        function submitReflection() {
+            const text = document.getElementById('reflection-text').value;
+            if(!text) {
+                showMessage("Tuliskan sesuatu di kotak refleksi ya!");
+                return;
+            }
+            showMessage("Terima kasih! Refleksimu telah tersimpan.");
+            setTimeout(() => showSection('home'), 2000);
+        }
+
+        // --- Developer ---
+        function goToDeveloper() {
+            window.location.href = "https://s.id.noviyalpg";
+        }
+
+        // --- UI Utils ---
+        function showMessage(msg) {
+            const box = document.getElementById('message-box');
+            box.innerText = msg;
+            box.style.display = 'block';
+            setTimeout(() => {
+                box.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
